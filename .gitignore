@@ -49,3 +49,4 @@ target/
 /erni-demo-rag-backend/src/main/resources/application.properties
 /erni-demo-rag-backend/src/main/resources/cv_files/
 /erni-demo-rag-backend/src/main/resources/cv_jsons/
+erni-demo-rag-ui/src/environments/environment-cs.ts

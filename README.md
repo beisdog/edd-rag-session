@@ -20,6 +20,17 @@ to answer questions with your own knowledge
 * If you want to import data into your own vector store namespace
   * Change: application.properties, ``erni.vector-store.pinecone.namespace=bedv`` to your user name so you do not overwrite my data
 
+## Setup with Codespace
+* Goto the github repo -> Code -> Codespaces -> Open main
+* Copy the application.properties and cv_files.zip by uploading it to resources folder
+* run in erni-rag-backend/src/main/resources the command ```jar -xvf cv_files.zip .```
+* Add the maven dependencies in erni-rag-backend/snippets/code_snippets.md
+* In erni-rag-backend/ run ```mvn clean install spring-boot:run``` 
+* Accept the port forwarding, open in browser, copy the url
+* Run the UI frontend like in Run frontend
+* Accept that the port is opened, open the url
+* edit the environment.json, add the url of the backend there
+
 ## Run backend
 * Go to erni-demo-rag-backend/
 * In the terminal execute:  ``./mvnw clean install spring-boot:run``
@@ -27,7 +38,7 @@ to answer questions with your own knowledge
 * You can access the swagger ui on: http://localhost:8080/swagger
 
 ## Run frontend
-* got erni-demo-ui
+* go to erni-demo-ui
 * in the terminal execute ``npm install``
 * ``npm start``
 * You can access the UI on: http://localhost:4200/chat
