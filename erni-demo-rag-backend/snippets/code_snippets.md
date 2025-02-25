@@ -1,6 +1,6 @@
 
 # Maven dependencies
-add to pom.xml
+Already added to pom.xml, just for information
 ```xml
 <!-- langchain4j -->
 <dependency>
