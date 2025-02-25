@@ -21,13 +21,13 @@ add to pom.xml
 ```java
 @PostMapping("/ask/simple")
 public Message ask(@RequestBody AskInput input) {
-        String response = chatLanguageModel.chat(input.question);
+    String response = chatLanguageModel.chat(input.question);
 
-        return
-                Message.builder()
-                        .text(response)
-                        .type("assistant").build();
-    }
+    return
+            Message.builder()
+                    .text(response)
+                    .type("assistant").build();
+}
 ```
 # 2. ask llm with history
 ```java
