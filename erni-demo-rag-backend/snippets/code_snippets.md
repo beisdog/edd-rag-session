@@ -2,6 +2,12 @@
 # Maven dependencies
 add to pom.xml
 ```xml
+<!-- langchain4j -->
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j</artifactId>
+    <version>${langchain4j.version}</version>
+</dependency>
 <!-- openai -->
 <dependency>
     <groupId>dev.langchain4j</groupId>
@@ -16,6 +22,10 @@ add to pom.xml
     <version>${langchain4j.version}</version>
 </dependency>
 ```
+
+# Create the stubs
+git checkout 0_stubs
+
 # 1. Ask llm from Java
 - ChatLanguageModelController.java
 ```java
