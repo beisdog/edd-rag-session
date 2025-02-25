@@ -23,9 +23,6 @@ add to pom.xml
 </dependency>
 ```
 
-# Create the stubs
-git checkout 0_stubs
-
 # 1. Ask llm from Java
 - ChatLanguageModelController.java
 ```java
