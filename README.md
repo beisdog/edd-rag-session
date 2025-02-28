@@ -22,6 +22,8 @@ to answer questions with your own knowledge
   * Change: application.properties, ``erni.vector-store.pinecone.namespace=bedv`` to your user name so you do not overwrite my data
 
 ## Setup with Codespace
+Codespaces is an online IDE that starts a VS Code instance right in the browser with the project. It can be accessed when you are logged into github
+and then can be opened from the repository
 * Goto the github repo -> Code -> Codespaces -> Open main
 * Copy the application.properties and cv_files.zip by uploading it to erni-rag-backend/src/main/resources folder
 * Open terminal
@@ -29,6 +31,7 @@ to answer questions with your own knowledge
 * run in erni-rag-backend/src/main/resources the command ```jar -xvf cv_files.zip .```
 * In erni-rag-backend/ run ```mvn clean install spring-boot:run``` 
 * Accept the port forwarding, open in browser, copy the url
+* Make the port of the backend public so the frontend can access it. (Ports tab in vs code)
 * Run the UI frontend like in Run frontend
 * Accept that the port is opened, open the url
 * edit the environment.json, add the url of the backend there
