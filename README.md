@@ -1,7 +1,8 @@
 # EDD Java and RAG Demo
 ## Objective
 This is a demo project that accompanies my EDD hands-on
-session and shows the complete solution.
+session and shows the incomplete solution.
+You can find the hands-on exercise solutions under [codesnippets.md](./erni-demo-rag-backend/snippets/code_snippets.md)
 This session shows how to connect an LLM with a vectorstore
 to answer questions with your own knowledge
 

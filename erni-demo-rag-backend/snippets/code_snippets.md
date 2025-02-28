@@ -62,13 +62,15 @@ public Message askWithMessages(@RequestBody Message[] input) {
 # 3. Simple RAG
 ## 3.1 RAG: Embedd a single CV
 - CVController.java
+
 ```java
+
 @PostMapping("/ask/cv/{id}")
 public ChatLanguageModelController.Message askAboutCV(@PathVariable("id") String id, @RequestBody ChatLanguageModelController.AskInput input) throws URISyntaxException, IOException {
     log.info("***************************** askAboutCV({}) *********************************", id);
     String cv = FileReaderHelper.readFileFromClasspath("/cv_files/" + id + ".md");
-    String systemPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_system_prompt.txt");
-    String userPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_user_prompt.txt");
+    String systemPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_system_prompt.txt");
+    String userPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_user_prompt.txt");
     SystemMessage systemMessage = SystemMessage.from(systemPrompt);
     String userMessageText = userPrompt
             .replace("{{cv_content}}", cv)
@@ -296,15 +298,17 @@ public List<TextSegmentResult> vectorSearch(@PathVariable("namespace") Namespace
 
 ## 4.3 Embed Search result into prompt
 CVController
+
 ```java
+
 @PostMapping("/ask/cv-list/{namespace}")
 public ChatLanguageModelController.Message askAboutCVSearchResult(@PathVariable("namespace") Namespace namespace,
                                                                   @RequestBody SearchInput input) throws URISyntaxException, IOException {
     log.info("***************************** askAboutCVSearchResult({}) *********************************", namespace);
     List<TextSegmentResult> textSegments = vectorSearch(namespace, input);
     String textSegmentsAsString = convertTextSegmentsToString(textSegments);
-    String systemPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_simple_system_prompt.txt");
-    String userPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_simple_user_prompt.txt");
+    String systemPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_vs_system_prompt.txt");
+    String userPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_vs_user_prompt.txt");
     SystemMessage systemMessage = SystemMessage.from(systemPrompt);
     String userMessageText = userPrompt
             .replace("{{cv_list}}", textSegmentsAsString)
@@ -320,6 +324,7 @@ public ChatLanguageModelController.Message askAboutCVSearchResult(@PathVariable(
                     .text(response.aiMessage().text())
                     .type("assistant").build();
 }
+
 @NotNull
 private static String convertTextSegmentsToString(List<TextSegmentResult> textSegments) {
     return textSegments
