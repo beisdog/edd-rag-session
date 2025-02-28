@@ -35,7 +35,7 @@ public class ChatLanguageModelController {
     public Message ask(@RequestBody AskInput input) {
         String response = chatLanguageModel.chat(input.question);
 
-    return
+        return
             Message.builder()
                     .text(response)
                     .type("assistant").build();
