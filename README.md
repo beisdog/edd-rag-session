@@ -25,8 +25,8 @@ to answer questions with your own knowledge
 * Goto the github repo -> Code -> Codespaces -> Open main
 * Copy the application.properties and cv_files.zip by uploading it to erni-rag-backend/src/main/resources folder
 * Open terminal
-* ```bash cd erni-demo-rag-backend/src/main/resources``` 
-* run in erni-rag-backend/src/main/resources the command ```bash jar -xvf cv_files.zip .```
+* ``` cd erni-demo-rag-backend/src/main/resources``` 
+* run in erni-rag-backend/src/main/resources the command ```jar -xvf cv_files.zip .```
 * In erni-rag-backend/ run ```mvn clean install spring-boot:run``` 
 * Accept the port forwarding, open in browser, copy the url
 * Run the UI frontend like in Run frontend
