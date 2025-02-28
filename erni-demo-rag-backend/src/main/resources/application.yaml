@@ -1,7 +1,9 @@
 spring:
   application:
     name: erni-demo-rag
-
+server:
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:framework}
+  
 springdoc:
   swagger-ui.path: /swagger
   api-docs.path: /api-docs

@@ -33,7 +33,12 @@ public class ChatLanguageModelController {
 
     @PostMapping("/ask/simple")
     public Message ask(@RequestBody AskInput input) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        String response = chatLanguageModel.chat(input.question);
+
+    return
+            Message.builder()
+                    .text(response)
+                    .type("assistant").build();
     }
 
     @PostMapping("/ask/messages")
