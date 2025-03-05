@@ -27,7 +27,7 @@ and then can be opened from the repository
 * Goto the github repo -> Code -> Codespaces -> Open main
 * Copy the application.properties and cv_files.zip by uploading it to erni-rag-backend/src/main/resources folder
 * Open terminal
-* ``cd erni-demo-rag-backend/src/main/resources``
+* in the terminal execute ``cd erni-demo-rag-backend/src/main/resources``
 * run in erni-rag-backend/src/main/resources the command ``jar -xvf cv_files.zip .``
 * In erni-rag-backend/ run ``mvn clean install spring-boot:run``
 * Accept the port forwarding, open in browser, copy the url
@@ -36,14 +36,14 @@ and then can be opened from the repository
 * Accept that the port is opened, open the url
 * edit the environment.json, add the url of the backend there
 
-## Run backend
+## Run backend 
 * Go to backend: ``cd erni-demo-rag-backend``
 * In the terminal execute:  ``./mvnw clean install spring-boot:run``
-* Or run the class ErniDemoRagApplication from the IDE.
+  * or just run the Main class ``ErniDemoRagApplication`` from the IDE run menu
 * You can access the swagger ui on: http://localhost:8080/swagger
 
 ## Run frontend
-* go to ui: ``cd erni-demo-rag-ui``
+* go to ui:  In the terminal: ``cd erni-demo-rag-ui``
 * in the terminal execute ``npm install``
-* ``npm start``
+* in the terminal execute ``npm start``
 * You can access the UI on: http://localhost:4200/chat
