@@ -28,7 +28,7 @@ and then can be opened from the repository
 * Copy the application.properties and cv_files.zip by uploading it to erni-rag-backend/src/main/resources folder
 * Open terminal
 * in the terminal execute ``cd erni-demo-rag-backend/src/main/resources``
-* run in erni-rag-backend/src/main/resources the command ``jar -xvf cv_files.zip .``
+* run in erni-rag-backend/src/main/resources the command ``jar -xvf cv_data.zip .``
 * In erni-rag-backend/ run ``mvn clean install spring-boot:run``
 * Accept the port forwarding, open in browser, copy the url
 * Make the port of the backend public so the frontend can access it. (Ports tab in vs code)
