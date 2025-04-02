@@ -8,8 +8,12 @@ import ch.erni.edd.demo.rag.util.FileReaderHelper;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
+import dev.langchain4j.rag.query.Query;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -75,8 +79,31 @@ public class CVController {
 
     @PostMapping("/profiles/vs/search/{namespace}")
     public List<TextSegmentResult> vectorSearch(@PathVariable("namespace") Namespace namespace, @RequestBody SearchInput searchInput) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        log.info("*** vectorSearch: {}: for query '{}' ...", namespace, searchInput.question);
+        ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(this.pineconeConfig.createEmbeddingStore(namespace.getType()))
+                .embeddingModel(embeddingModel)
+                .maxResults(searchInput.maxResults)
+                //.minScore(0.75)
+                .build();
+
+        var result = contentRetriever
+                .retrieve(Query.from(searchInput.question))
+                .stream().map(content -> {
+                    TextSegment textSegment = content.textSegment();
+                    return TextSegmentResult.builder()
+                            .text(textSegment.text())
+                            .metadata(textSegment.metadata().toMap())
+                            .namespace(namespace.getType())
+                            .build();
+                }).toList();
+        log.info("Results:\n{}", result.stream().map(t -> "\n-------- BEGIN OF TEXTSEGMENT------\n"
+                        + t.text
+                        + "\n-------- END OF TEXTSEGMENT------\n")
+                .collect(Collectors.joining()));
+        return result;
     }
+
 
     @PostMapping("/ask/cv/{id}")
     public ChatLanguageModelController.Message askAboutCV(@PathVariable("id") String id, @RequestBody ChatLanguageModelController.AskInput input) throws URISyntaxException, IOException {
@@ -111,8 +138,27 @@ public class CVController {
     @PostMapping("/ask/cv-list/{namespace}")
     public ChatLanguageModelController.Message askAboutCVSearchResult(@PathVariable("namespace") Namespace namespace,
                                                                       @RequestBody SearchInput input) throws URISyntaxException, IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        log.info("***************************** askAboutCVSearchResult({}) *********************************", namespace);
+        List<TextSegmentResult> textSegments = vectorSearch(namespace, input);
+        String textSegmentsAsString = convertTextSegmentsToString(textSegments);
+        String systemPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_vs_system_prompt.txt");
+        String userPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_vs_user_prompt.txt");
+        SystemMessage systemMessage = SystemMessage.from(systemPrompt);
+        String userMessageText = userPrompt
+                .replace("{{cv_list}}", textSegmentsAsString)
+                .replace("{{question}}", input.question);
+        UserMessage userMessage = UserMessage.from(userMessageText);
+
+        logPrompt(userMessageText);
+
+        var response = chatLanguageModel.chat(systemMessage, userMessage);
+
+        return
+                ChatLanguageModelController.Message.builder()
+                        .text(response.aiMessage().text())
+                        .type("assistant").build();
     }
+
 
     @NotNull
     private static String convertTextSegmentsToString(List<TextSegmentResult> textSegments) {
