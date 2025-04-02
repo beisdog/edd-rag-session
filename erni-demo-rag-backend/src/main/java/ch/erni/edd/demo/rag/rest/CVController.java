@@ -5,18 +5,11 @@ import ch.erni.edd.demo.rag.model.Profile;
 import ch.erni.edd.demo.rag.rest.CVIngestorController.Namespace;
 import ch.erni.edd.demo.rag.service.CVService;
 import ch.erni.edd.demo.rag.util.FileReaderHelper;
-import dev.langchain4j.agent.tool.Tool;
+import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.response.ChatResponse;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
-import dev.langchain4j.rag.query.Query;
-import dev.langchain4j.service.AiServices;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,7 +80,28 @@ public class CVController {
 
     @PostMapping("/ask/cv/{id}")
     public ChatLanguageModelController.Message askAboutCV(@PathVariable("id") String id, @RequestBody ChatLanguageModelController.AskInput input) throws URISyntaxException, IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        log.info("***************************** askAboutCV({}) *********************************", id);
+        // cv laden
+        String cv = FileReaderHelper.readFileFromClasspath("/cv_files/" + id + ".md");
+        // prompts laden
+        String systemPrompt = FileReaderHelper.readFileFromClasspath("/prompts/cv_rag_system_prompt.txt");
+        String userPrompt = FileReaderHelper.readFileFromClasspath("/prompts/cv_rag_user_prompt.txt");
+        // cv in den prompt einbetten
+        String userMessageText = userPrompt.replace("{{cv_content}}", cv);
+        userMessageText = userMessageText.replace("{{question}}", input.question);
+        logPrompt(userMessageText);
+        // chatmessage liste zusammen bauen
+        List<ChatMessage> chatMessages = new ArrayList<>();
+        chatMessages.add(SystemMessage.from(systemPrompt));
+        chatMessages.add(UserMessage.from(userMessageText));
+
+        //llm fragen
+        var response = this.chatLanguageModel.chat(chatMessages);
+        return ChatLanguageModelController.Message
+                .builder()
+                .text(response.aiMessage().text())
+                .type("assistant")
+                .build();
     }
 
     private static void logPrompt(String userMessageText) {
