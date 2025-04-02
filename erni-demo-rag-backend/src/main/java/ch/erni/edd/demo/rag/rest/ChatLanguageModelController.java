@@ -1,6 +1,8 @@
 package ch.erni.edd.demo.rag.rest;
 
+import dev.ai4j.openai4j.chat.AssistantMessage;
 import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import lombok.Builder;
@@ -33,11 +35,31 @@ public class ChatLanguageModelController {
 
     @PostMapping("/ask/simple")
     public Message ask(@RequestBody AskInput input) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var response = this.chatLanguageModel.chat(input.question);
+        return Message.builder()
+                .text(response)
+                .type("assistant")
+                .build();
     }
 
     @PostMapping("/ask/messages")
     public Message askWithMessages(@RequestBody Message[] input) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List<ChatMessage> messages = Stream.of(input).map(m -> {
+            if (Objects.equals(m.getType(), "user")) {
+                return dev.langchain4j.data.message.UserMessage.from(m.getText());
+            } else if (Objects.equals(m.getType(), "system")) {
+                return dev.langchain4j.data.message.SystemMessage.from(m.getText());
+            }else if (Objects.equals(m.getType(), "assistant")) {
+                return dev.langchain4j.data.message.SystemMessage.from(m.getText());
+            }
+            throw new IllegalArgumentException("Unknown message type: " + m.getType());
+        }).toList();
+
+        ChatResponse response = chatLanguageModel.chat(messages);
+
+        return
+                Message.builder()
+                        .text(response.aiMessage().text())
+                        .type("assistant").build();
     }
 }
