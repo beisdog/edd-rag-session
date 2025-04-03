@@ -1,22 +1,22 @@
 package ch.erni.edd.demo.rag.rest;
 
-import ch.erni.edd.demo.rag.config.PineconeConfig;
 import ch.erni.edd.demo.rag.model.Profile;
 import ch.erni.edd.demo.rag.rest.CVIngestorController.Namespace;
+import ch.erni.edd.demo.rag.service.CVAssistantInterface;
 import ch.erni.edd.demo.rag.service.CVService;
+import ch.erni.edd.demo.rag.service.SearchInput;
+import ch.erni.edd.demo.rag.service.TextSegmentResult;
 import ch.erni.edd.demo.rag.util.FileReaderHelper;
+import dev.langchain4j.agent.tool.Tool;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
-import dev.langchain4j.rag.query.Query;
-import lombok.*;
+import dev.langchain4j.service.AiServices;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -36,28 +34,8 @@ public class CVController {
 
     @Value("${erni.resources.dir}")
     private String resourcesDir;
-    private final EmbeddingModel embeddingModel;
-    private final PineconeConfig pineconeConfig;
     private final ChatLanguageModel chatLanguageModel;
     private final CVService cvService;
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @ToString
-    public static class TextSegmentResult {
-        public String text;
-        public Map<String, Object> metadata;
-        public String namespace;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SearchInput {
-        public String question;
-        public int maxResults;
-    }
 
 
     @GetMapping("/profiles")
@@ -79,29 +57,7 @@ public class CVController {
 
     @PostMapping("/profiles/vs/search/{namespace}")
     public List<TextSegmentResult> vectorSearch(@PathVariable("namespace") Namespace namespace, @RequestBody SearchInput searchInput) {
-        log.info("*** vectorSearch: {}: for query '{}' ...", namespace, searchInput.question);
-        ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(this.pineconeConfig.createEmbeddingStore(namespace.getType()))
-                .embeddingModel(embeddingModel)
-                .maxResults(searchInput.maxResults)
-                //.minScore(0.75)
-                .build();
-
-        var result = contentRetriever
-                .retrieve(Query.from(searchInput.question))
-                .stream().map(content -> {
-                    TextSegment textSegment = content.textSegment();
-                    return TextSegmentResult.builder()
-                            .text(textSegment.text())
-                            .metadata(textSegment.metadata().toMap())
-                            .namespace(namespace.getType())
-                            .build();
-                }).toList();
-        log.info("Results:\n{}", result.stream().map(t -> "\n-------- BEGIN OF TEXTSEGMENT------\n"
-                        + t.text
-                        + "\n-------- END OF TEXTSEGMENT------\n")
-                .collect(Collectors.joining()));
-        return result;
+        return cvService.vectorSearch(namespace, searchInput);
     }
 
 
@@ -140,7 +96,7 @@ public class CVController {
                                                                       @RequestBody SearchInput input) throws URISyntaxException, IOException {
         log.info("***************************** askAboutCVSearchResult({}) *********************************", namespace);
         List<TextSegmentResult> textSegments = vectorSearch(namespace, input);
-        String textSegmentsAsString = convertTextSegmentsToString(textSegments);
+        String textSegmentsAsString = CVService.convertTextSegmentsToString(textSegments);
         String systemPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_vs_system_prompt.txt");
         String userPrompt = FileReaderHelper.readFileFromFileSystemOrClassPath(resourcesDir, "/prompts/cv_rag_vs_user_prompt.txt");
         SystemMessage systemMessage = SystemMessage.from(systemPrompt);
@@ -159,22 +115,6 @@ public class CVController {
                         .type("assistant").build();
     }
 
-
-    @NotNull
-    private static String convertTextSegmentsToString(List<TextSegmentResult> textSegments) {
-        return textSegments
-                .stream()
-                .map(textSegment ->
-                        new StringBuilder("Profile ID:")
-                                .append(textSegment.metadata.get("id")).append("\n")
-                                .append("Name:").append(textSegment.metadata.get("name")).append("\n")
-                                .append("CV:\n")
-                                .append(textSegment.text).append("\n")
-                                .append("---\n")
-                                .toString()
-                )
-                .collect(Collectors.joining("\n"));
-    }
 
     @PostMapping("/agent")
     public ChatLanguageModelController.Message agentAssistForCVs(@RequestBody ChatLanguageModelController.AskInput input) {
