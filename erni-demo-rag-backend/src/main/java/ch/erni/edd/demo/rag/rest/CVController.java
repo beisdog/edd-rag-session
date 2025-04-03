@@ -2,18 +2,14 @@ package ch.erni.edd.demo.rag.rest;
 
 import ch.erni.edd.demo.rag.model.Profile;
 import ch.erni.edd.demo.rag.rest.CVIngestorController.Namespace;
-import ch.erni.edd.demo.rag.service.CVAssistantInterface;
 import ch.erni.edd.demo.rag.service.CVService;
 import ch.erni.edd.demo.rag.service.SearchInput;
 import ch.erni.edd.demo.rag.service.TextSegmentResult;
 import ch.erni.edd.demo.rag.util.FileReaderHelper;
-import dev.langchain4j.agent.tool.Tool;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.service.AiServices;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
