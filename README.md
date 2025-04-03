@@ -14,7 +14,7 @@ to answer questions with your own knowledge
 * Optional: Ollama (a bit more performant than running it in a docker container)
 
 ## Setup
-* extract the cv_files.zip from [Sharepoint folder](https://erniegh-my.sharepoint.com/:f:/g/personal/david_beisert_betterask_erni/Es-_6g4ai89Cj5LcHQT7T2kBiqaq9MD-5ApdtmRSW6PR2g?e=9j3nXx) 
+* extract the cv_data.zip from [Sharepoint folder](https://erniegh-my.sharepoint.com/:f:/g/personal/david_beisert_betterask_erni/Es-_6g4ai89Cj5LcHQT7T2kBiqaq9MD-5ApdtmRSW6PR2g?e=9j3nXx) 
   * to ``erni-demo-rag-backend/src/main/resources``
 * copy the application.properties from from [Sharepoint folder](https://erniegh-my.sharepoint.com/:f:/g/personal/david_beisert_betterask_erni/Es-_6g4ai89Cj5LcHQT7T2kBiqaq9MD-5ApdtmRSW6PR2g?e=9j3nXx) 
   * also to ``erni-demo-rag-backend/src/main/resources``
@@ -23,8 +23,8 @@ to answer questions with your own knowledge
 
 ## Setup with Codespace
 * Goto the github repo -> Code -> Codespaces -> Open main
-* Copy the application.properties and cv_files.zip by uploading it to resources folder
-* run in erni-rag-backend/src/main/resources the command ```jar -xvf cv_files.zip .```
+* Copy the application.properties and cv_data.zip by uploading it to resources folder
+* run in erni-rag-backend/src/main/resources the command ```jar -xvf cv_data.zip .```
 * Add the maven dependencies in erni-rag-backend/snippets/code_snippets.md
 * In erni-rag-backend/ run ```mvn clean install spring-boot:run``` 
 * Accept the port forwarding, open in browser, copy the url
