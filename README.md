@@ -16,7 +16,7 @@ to answer questions with your own knowledge
 ## Setup
 * extract the cv_data.zip from [Sharepoint folder](https://erniegh-my.sharepoint.com/:f:/g/personal/david_beisert_betterask_erni/Es-_6g4ai89Cj5LcHQT7T2kBiqaq9MD-5ApdtmRSW6PR2g?e=9j3nXx) 
   * to ``erni-demo-rag-backend/src/main/resources``
-* copy the application.properties from from [Sharepoint folder](https://erniegh-my.sharepoint.com/:f:/g/personal/david_beisert_betterask_erni/Es-_6g4ai89Cj5LcHQT7T2kBiqaq9MD-5ApdtmRSW6PR2g?e=9j3nXx) 
+* copy the application.properties from [Sharepoint folder](https://erniegh-my.sharepoint.com/:f:/g/personal/david_beisert_betterask_erni/Es-_6g4ai89Cj5LcHQT7T2kBiqaq9MD-5ApdtmRSW6PR2g?e=9j3nXx) 
   * also to ``erni-demo-rag-backend/src/main/resources``
 * If you want to import data into your own vector store namespace
   * Change: application.properties, ``erni.vector-store.pinecone.namespace=bedv`` to your user name so you do not overwrite my data
